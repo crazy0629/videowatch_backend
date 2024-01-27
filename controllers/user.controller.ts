@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
+import bcrypt from "bcrypt";
 import User from "../models/user";
 import { generateToken } from "../service/helper";
-import bcrypt from "bcrypt";
 
 /**
  * User registration function
