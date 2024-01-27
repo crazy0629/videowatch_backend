@@ -24,7 +24,7 @@ const uploadVideo = multer({ storage: videoStorage });
 
 router.post("/auth/signin", auth.signIn);
 router.post("/auth/signup", auth.signUp);
-router.post("/auth/addPoint", auth.addPoint);
+router.post("/auth/getTopRatedUsers", auth.getTopRatedUsers);
 
 router.post("/asset/upload", uploadVideo.single("ad"), video.uploadVideo);
 router.post("/upload/cancel", video.cancelUpload);
