@@ -5,6 +5,7 @@ import path from "path";
 import fs from "fs";
 
 import Video from "../models/video";
+import User from "../models/user";
 
 const { getVideoDurationInSeconds } = require("get-video-duration");
 
@@ -153,6 +154,36 @@ export const getDetailInfo = async (req: Request, res: Response) => {
         message: "Error found!",
       });
     }
+
+    const user = await User.findById(
+      new mongoose.Types.ObjectId(req.body.userId)
+    );
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "Error found!",
+      });
+    }
+    user.point = user.point + 10;
+    await user.save();
+
+    model.viewCount = model.viewCount + 1;
+    await model.save();
+
+    if (req.body.shared != "") {
+      const shareUser = await User.findById(
+        new mongoose.Types.ObjectId(req.body.shared)
+      );
+      if (!shareUser) {
+        return res.json({
+          success: false,
+          message: "Error found!",
+        });
+      }
+      shareUser.point = shareUser.point + 5;
+      await shareUser.save();
+    }
+
     return res.json({
       success: true,
       message: "Success!",
