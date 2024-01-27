@@ -5,3 +5,12 @@ export interface IUser extends Document {
   password: string;
   point: number;
 }
+
+export interface IVideo extends Document {
+  adFileName: string;
+  uploadDate: Date;
+  duration: number;
+  viewCount: number;
+  title: string;
+  description: string;
+}
