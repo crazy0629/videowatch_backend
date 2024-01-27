@@ -31,6 +31,7 @@ export const uploadVideo = async (req: Request, res: Response) => {
     newVideo.uploadDate = req.body.uploadDate;
     newVideo.title = "";
     newVideo.description = "";
+    newVideo.viewCount = 0;
     const video_dir = path.join(__dirname, "../uploads/video/" + filename);
     newVideo.duration = await getVideoDurationInSeconds(video_dir);
     await newVideo.save();
@@ -115,6 +116,51 @@ export const cancelUpload = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     res.json({
+      success: false,
+      message: "Error found!",
+    });
+  }
+};
+
+export const getMoreVideos = async (req: Request, res: Response) => {
+  try {
+    let nextVideos = await Video.find()
+      .sort({ uploadDate: -1 })
+      .skip(req.body.index * 50)
+      .limit(50);
+    return res.json({
+      success: true,
+      message: "Successfully loaded!",
+      data: nextVideos,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      success: false,
+      message: "Error found!",
+    });
+  }
+};
+
+export const getDetailInfo = async (req: Request, res: Response) => {
+  try {
+    const model = await Video.findById(
+      new mongoose.Types.ObjectId(req.body.videoId)
+    );
+    if (!model) {
+      return res.json({
+        success: false,
+        message: "Error found!",
+      });
+    }
+    return res.json({
+      success: true,
+      message: "Success!",
+      data: model,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
       success: false,
       message: "Error found!",
     });
