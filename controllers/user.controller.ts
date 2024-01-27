@@ -1,7 +1,10 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import User from "../models/user";
+import Video from "../models/video";
+
 import { generateToken } from "../service/helper";
+import mongoose from "mongoose";
 
 /**
  * User registration function
@@ -83,6 +86,39 @@ export const signIn = async (req: Request, res: Response) => {
       success: false,
       message: "Incorrect email or password. Please try again.",
     });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      success: false,
+      message: "Error found!",
+    });
+  }
+};
+
+export const addPoint = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(
+      new mongoose.Types.ObjectId(req.body.userId)
+    );
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "Error found!",
+      });
+    }
+    user.point = user.point + 10;
+    await user.save();
+    const video = await Video.findById(
+      new mongoose.Types.ObjectId(req.body.videoId)
+    );
+    if (!video) {
+      return res.json({
+        success: false,
+        message: "Error found!",
+      });
+    }
+    video.viewCount = video.viewCount + 1;
+    await user.save();
   } catch (error) {
     console.log(error);
     return res.json({
