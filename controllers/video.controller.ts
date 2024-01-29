@@ -1,119 +1,26 @@
 import { Request, Response } from "express";
-import Multer from "multer";
 import mongoose from "mongoose";
-import path from "path";
-import fs from "fs";
 
 import Video from "../models/video";
 import User from "../models/user";
 
 const { getVideoDurationInSeconds } = require("get-video-duration");
 
-/**
- * Upload Video function
- *
- * @param req
- * @param res
- * @returns
- */
-
-export const uploadVideo = async (req: Request, res: Response) => {
+export const loadVideoDetailInfo = async (req: Request, res: Response) => {
   try {
-    const multerReq = req as Request & { file?: Multer.File };
-    if (!multerReq?.file) {
-      res.status(400).json({ success: false, message: "No file uploaded" });
-      return;
-    }
-
-    const { filename, originalname } = multerReq.file;
-
     const newVideo = new Video();
-    newVideo.adFileName = "/uploads/video/" + filename;
+    newVideo.adFileName = req.body.adFileName;
+    newVideo.title = req.body.title;
+    newVideo.description = req.body.description;
     newVideo.uploadDate = req.body.uploadDate;
-    newVideo.title = "";
-    newVideo.description = "";
     newVideo.viewCount = 0;
-    const video_dir = path.join(__dirname, "../uploads/video/" + filename);
-    newVideo.duration = await getVideoDurationInSeconds(video_dir);
+    newVideo.duration = await getVideoDurationInSeconds(req.body.adFileName);
     await newVideo.save();
 
     res.json({
       success: true,
-      message: "Success! Your video has been uploaded successfully!",
-      filename,
-      originalname,
-      model: newVideo,
-    });
-  } catch (error) {
-    console.log(error);
-    res.json({
-      success: false,
-      message: "Error found!",
-    });
-  }
-};
-
-export const loadVideoDetailInfo = async (req: Request, res: Response) => {
-  try {
-    const model = await Video.findById(
-      new mongoose.Types.ObjectId(req.body.videoId)
-    );
-    if (!model) {
-      return res.json({
-        success: false,
-        message: "Error found!",
-      });
-    }
-    model.title = req.body.title;
-    model.description = req.body.description;
-    await model.save();
-    res.json({
-      success: true,
       message: "Successfully loaded detail information!",
     });
-  } catch (error) {
-    console.log(error);
-    res.json({
-      success: false,
-      message: "Error found!",
-    });
-  }
-};
-
-/**
- * Cancel upload function when users press close button
- *
- * @param req
- * @param res
- */
-
-export const cancelUpload = async (req: Request, res: Response) => {
-  try {
-    Video.findById(new mongoose.Types.ObjectId(req.body.adId)).then(
-      async (model: any) => {
-        if (!model) {
-          return res.json({
-            success: true,
-            message: "Upload is cancelled successfully",
-          });
-        }
-        const adFilePath = path.join(__dirname, "/.." + model.adFileName);
-        fs.unlink(adFilePath, (err) => {
-          if (err) {
-            console.error("Error deleting file:", err);
-          }
-          console.log("File deleted successfully");
-        });
-
-        const adObj = await Video.findByIdAndDelete(
-          new mongoose.Types.ObjectId(req.body.adId)
-        );
-        return res.json({
-          success: true,
-          message: "Upload is cancelled successfully",
-        });
-      }
-    );
   } catch (error) {
     console.log(error);
     res.json({
