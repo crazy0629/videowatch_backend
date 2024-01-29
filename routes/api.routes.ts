@@ -8,6 +8,7 @@ const router = Router();
 router.post("/auth/signin", auth.signIn);
 router.post("/auth/signup", auth.signUp);
 router.post("/auth/getTopRatedUsers", auth.getTopRatedUsers);
+router.post("/auth/addPoint", auth.addPoint);
 
 router.post("/upload/detail", video.loadVideoDetailInfo);
 router.post("/video/getMoreVideos", video.getMoreVideos);
