@@ -14,7 +14,8 @@ export const loadVideoDetailInfo = async (req: Request, res: Response) => {
     newVideo.description = req.body.description;
     newVideo.uploadDate = new Date();
     newVideo.viewCount = 0;
-    newVideo.duration = await getVideoDurationInSeconds(req.body.videoLink);
+    // newVideo.duration = await getVideoDurationInSeconds(req.body.videoLink);
+    newVideo.duration = 0;
     await newVideo.save();
 
     res.json({
