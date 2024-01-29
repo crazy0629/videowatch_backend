@@ -31,7 +31,7 @@ app.get("*", (req, res) => {
     "./client/build/index.html",
     { encoding: "utf-8" },
     (err, data) => {
-      if (!data) res.send("Server is running on Port 8000");
+      if (!data) res.send("Server is running on Port 8002");
       else res.send(data);
     }
   );
