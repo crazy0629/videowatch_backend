@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import User from "../models/user";
 
 import { generateToken } from "../service/helper";
+import mongoose from "mongoose";
 
 /**
  * User registration function
@@ -102,6 +103,33 @@ export const getTopRatedUsers = async (req: Request, res: Response) => {
       success: true,
       message: "Success!",
       data: topRatedUsers,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.json({
+      success: false,
+      message: "Error found!",
+    });
+  }
+};
+
+export const addPoint = async (req: Request, res: Response) => {
+  try {
+    const user = await User.findById(
+      new mongoose.Types.ObjectId(req.body.userId)
+    );
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "Error found!",
+      });
+    }
+    user.point = user.point + 10;
+    await user.save();
+
+    return res.json({
+      success: true,
+      data: user,
     });
   } catch (error) {
     console.log(error);

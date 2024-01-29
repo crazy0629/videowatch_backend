@@ -9,12 +9,12 @@ const { getVideoDurationInSeconds } = require("get-video-duration");
 export const loadVideoDetailInfo = async (req: Request, res: Response) => {
   try {
     const newVideo = new Video();
-    newVideo.adFileName = req.body.adFileName;
+    newVideo.adFileName = req.body.videoLink;
     newVideo.title = req.body.title;
     newVideo.description = req.body.description;
-    newVideo.uploadDate = req.body.uploadDate;
+    newVideo.uploadDate = new Date();
     newVideo.viewCount = 0;
-    newVideo.duration = await getVideoDurationInSeconds(req.body.adFileName);
+    newVideo.duration = await getVideoDurationInSeconds(req.body.videoLink);
     await newVideo.save();
 
     res.json({
@@ -61,18 +61,6 @@ export const getDetailInfo = async (req: Request, res: Response) => {
         message: "Error found!",
       });
     }
-
-    const user = await User.findById(
-      new mongoose.Types.ObjectId(req.body.userId)
-    );
-    if (!user) {
-      return res.json({
-        success: false,
-        message: "Error found!",
-      });
-    }
-    user.point = user.point + 10;
-    await user.save();
 
     model.viewCount = model.viewCount + 1;
     await model.save();
